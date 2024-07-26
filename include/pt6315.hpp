@@ -47,41 +47,31 @@ typedef enum
 typedef enum
 {
     SET_ADR_TO_00H = 0b11000000,
-
 } CMD3_ADR_SET;
-
-// command4
-/*
- * 显示开关与亮度
- * 1 0 - - b3 b2 b1 b0
- *
- * b3 for 开关显示
- * b2~b0: 显示亮度
- */
-typedef enum
-{
-    DISPLAY_ON_HIGH_LIGHT = 0b10001111,
-    DISPLAY_OFF_MID_LIGHT = 0b10000100,
-} CMD4_ONOFF_LIGHT;
 
 class PT6315
 {
 private:
     bool **Buffer;
-    uint8_t registerMaxRow = 12;
-    uint8_t registerMaxColumn = 24;
-    uint8_t registerBufferLen = registerMaxRow * (registerMaxColumn / 8);
-    
+    uint8_t registerMaxRow;
+    uint8_t registerMaxColumn;
+    uint8_t registerBufferLen;
+
+    CMD1_SCAN_MODE CURRENT_SCAN_MODE;
+    uint8_t CURRENT_LIGHTNESS;
 
     void PT6315_SendCMD(uint8_t cmd);
     void PT6315_SendDTA_AutoAdr(uint8_t *sendBuf);
-    void PT6315_ClearRegister();
+    void PT6315_ClearAll();
     uint8_t* PT6315_GetSendBuf();
     uint8_t reverseByte(uint8_t byte);
 
 public:
-    PT6315();
+    PT6315(CMD1_SCAN_MODE scanMode, uint8_t lightness, uint8_t registerMaxRow=12, uint8_t registerMaxColumn=24);
     ~PT6315();
     void PT6315_WriteBuffer(uint8_t grid, uint8_t column, bool bit);
     void PT6315_ShowFrame();
+    void PT6315_SetScreen(bool onOff, uint8_t lightness);
+    void PT6315_SetScanMode(CMD1_SCAN_MODE scanMode);
+    void PT6315_Test(uint8_t screenGridNum, uint8_t screenSegNum);
 };
