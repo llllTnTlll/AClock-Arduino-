@@ -11,6 +11,7 @@ void setup() {
   digitalWrite(10, HIGH);
 
   Screen* myScreen = new Screen(6, 16);
+  myScreen->Print("1234567");
 }
 
 void loop() {

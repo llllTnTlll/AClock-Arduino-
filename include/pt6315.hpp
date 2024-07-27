@@ -1,4 +1,8 @@
+#ifndef PT6315_HPP
+#define PT6315_HPP
+
 #include <SPI.h>
+#include <ArxContainer.h>
 
 // command1
 /*
@@ -51,6 +55,9 @@ private:
     uint8_t registerMaxColumn;
     uint8_t registerBufferLen;
 
+    uint8_t screenMaxGrid;
+    uint8_t screenMaxSeg;
+
     CMD1_SCAN_MODE CURRENT_SCAN_MODE;
     uint8_t CURRENT_LIGHTNESS;
 
@@ -59,7 +66,6 @@ private:
 
     void PT6315_SendCMD(uint8_t cmd);
     void PT6315_SendDTA_AutoAdr(uint8_t *sendBuf);
-    void PT6315_ClearAll();
     uint8_t *PT6315_GetSendBuf();
 
     inline uint8_t reverseByte(uint8_t byte)
@@ -77,9 +83,16 @@ private:
 public:
     PT6315(uint8_t screenGridNum, uint8_t screenSegNum, uint8_t registerMaxRow = 12, uint8_t registerMaxColumn = 24);
     ~PT6315();
-    void PT6315_WriteBuffer(uint8_t grid, uint8_t column, bool bit);
+
+    void PT6315_WriteBufferOneBit(uint8_t grid, uint8_t seg, bool bit);
+    void PT6315_WriteBufferBits(uint8_t grid, uint8_t seg, std::vector<bool>bits);
+
     void PT6315_ShowFrame();
+    void PT6315_ClearAll();
+
     void PT6315_SetScreen(bool onOff, uint8_t lightness);
     void PT6315_SetScanMode(CMD1_SCAN_MODE scanMode);
     void PT6315_Test(uint8_t screenGridNum, uint8_t screenSegNum);
 };
+
+#endif

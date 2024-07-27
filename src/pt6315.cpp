@@ -4,7 +4,9 @@ PT6315::PT6315(uint8_t screenGridNum, uint8_t screenSegNum, uint8_t maxRow, uint
     : registerMaxRow(maxRow),
       registerMaxColumn(maxColumn),
       registerBufferLen(registerMaxRow * (registerMaxColumn / 8)),
-      CURRENT_SCAN_MODE((CMD1_SCAN_MODE)getScanModeCMD(screenGridNum)),
+      screenMaxGrid(screenGridNum),
+      screenMaxSeg(screenSegNum),
+      CURRENT_SCAN_MODE((CMD1_SCAN_MODE)getScanModeCMD(screenMaxGrid)),
       CURRENT_LIGHTNESS(7)
 {
     // 初始化Buffer
@@ -61,7 +63,7 @@ void PT6315::PT6315_ClearAll()
     {
         for (int j = 1; j <= registerMaxColumn; ++j)
         {
-            PT6315_WriteBuffer(i, j, 0);
+            PT6315_WriteBufferOneBit(i, j, 0);
         }
     }
 
@@ -101,11 +103,18 @@ void PT6315::PT6315_ShowFrame()
     PT6315_SetScreen(1, CURRENT_LIGHTNESS);
 }
 
-void PT6315::PT6315_WriteBuffer(uint8_t grid, uint8_t seg, bool bit)
+void PT6315::PT6315_WriteBufferOneBit(uint8_t grid, uint8_t seg, bool bit)
 {
     Buffer[grid - 1][seg - 1] = bit;
 }
 
+void PT6315::PT6315_WriteBufferBits(uint8_t grid, uint8_t seg, std::vector<bool> bits)
+{
+    for (int i = 0; i < bits.size(); i++)
+    {
+        Buffer[grid - 1][seg - 1 + i] = static_cast<bool>(bits[i]);
+    }
+}
 
 void PT6315::PT6315_SetScreen(bool onOff, uint8_t lightness)
 {
@@ -133,7 +142,7 @@ void PT6315::PT6315_Test(uint8_t screenGridNum, uint8_t screenSegNum)
     {
         for (int j = 1; j <= screenGridNum; ++j)
         {
-            PT6315_WriteBuffer(j, i, 1);
+            PT6315_WriteBufferOneBit(j, i, 1);
         }
         PT6315_ShowFrame();
         delay(1000);
@@ -145,30 +154,29 @@ void PT6315::PT6315_Test(uint8_t screenGridNum, uint8_t screenSegNum)
     {
         for (int j = 1; j <= screenGridNum; ++j)
         {
-            PT6315_WriteBuffer(j, i, 1);
+            PT6315_WriteBufferOneBit(j, i, 1);
         }
     }
     PT6315_ShowFrame();
 
     // 八段亮度调整
-    for(int i=0; i<=7; ++i){
+    for (int i = 0; i <= 7; ++i)
+    {
         PT6315_SetScreen(1, i);
         delay(1000);
     }
 
     PT6315_ClearAll();
-
 }
 
-
-CMD1_SCAN_MODE PT6315::getScanModeCMD(uint8_t gridNum){
-    if(gridNum <= 12)
+CMD1_SCAN_MODE PT6315::getScanModeCMD(uint8_t gridNum)
+{
+    if (gridNum <= 12)
         return (CMD1_SCAN_MODE)(gridNum - 4);
-    else
-        return SCAN_MODE_12D16S;
 }
 
-uint8_t PT6315::getSetMemToCMD(uint8_t memIndex){
-    if(memIndex <= 23)
+uint8_t PT6315::getSetMemToCMD(uint8_t memIndex)
+{
+    if (memIndex <= 23)
         return (0b11000000 | memIndex);
 }
