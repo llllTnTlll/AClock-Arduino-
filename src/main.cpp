@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include <screen.hpp>
 
+Screen* myScreen;
+
 void setup() {
   Serial.begin(115200);
 
@@ -10,10 +12,9 @@ void setup() {
   pinMode(10, OUTPUT);
   digitalWrite(10, HIGH);
 
-  Screen* myScreen = new Screen(6, 16);
-  myScreen->Print("1234567");
+  myScreen = new Screen(6, 16);
 }
 
 void loop() {
-
+  myScreen->ScrollPirnt("2024-07-27", 800);
 }

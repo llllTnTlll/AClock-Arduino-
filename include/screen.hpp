@@ -54,6 +54,7 @@ public:
     void ClearScreen();
     void TestScreen();
     void Print(String content);
+    void ScrollPirnt(String content, uint16_t interval);
 };
 
 Screen::Screen(uint8_t gridNum, uint8_t segNum)
@@ -79,7 +80,7 @@ void Screen::TestScreen(){
 void Screen::Print(String content)
 {
     uint8_t digitPos = 0;
-    // 将在后期支持滚动播放
+    content = content.substring(0, 7);
     for (uint8_t i = 0; i < content.length(); ++i) {
         char word = static_cast<char>(content[i]);
 
@@ -90,6 +91,17 @@ void Screen::Print(String content)
     }
 
     driver->PT6315_ShowFrame();
+}
+
+void Screen::ScrollPirnt(String content, uint16_t interval){
+    Print(content);
+    delay(interval);
+    while (content.length() > 7) {
+        content = content.substring(1);
+        Print(content);
+        delay(interval);
+    }
+    delay(interval);
 }
 
 Screen::~Screen()
