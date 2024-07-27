@@ -9,8 +9,14 @@
  */
 typedef enum
 {
+    SCAN_MODE_4D24S = 0b00000000,
+    SCAN_MODE_5D23S = 0b00000001,
     SCAN_MODE_6D22S = 0b00000010,
+    SCAN_MODE_7D21S = 0b00000011,
     SCAN_MODE_8D20S = 0b00000100,
+    SCAN_MODE_9D19S = 0b00000101,
+    SCAN_MODE_10D18S = 0b00000110,
+    SCAN_MODE_11D17S = 0b00000111,
     SCAN_MODE_12D16S = 0b00001000,
 } CMD1_SCAN_MODE;
 
@@ -37,18 +43,6 @@ typedef enum
     FIXED_ADR_WRITE_DISPLAY = 0b01000100,
 } CMD2_DTA_SET;
 
-// command3
-/*
- * 地址设置模式
- * 1 1 b5 b4 b3 b2 b1 b0
- *
- * b5-b0 地址
- */
-typedef enum
-{
-    SET_ADR_TO_00H = 0b11000000,
-} CMD3_ADR_SET;
-
 class PT6315
 {
 private:
@@ -60,14 +54,28 @@ private:
     CMD1_SCAN_MODE CURRENT_SCAN_MODE;
     uint8_t CURRENT_LIGHTNESS;
 
+    CMD1_SCAN_MODE getScanModeCMD(uint8_t gridNum);
+    uint8_t getSetMemToCMD(uint8_t memIndex);
+
     void PT6315_SendCMD(uint8_t cmd);
     void PT6315_SendDTA_AutoAdr(uint8_t *sendBuf);
     void PT6315_ClearAll();
-    uint8_t* PT6315_GetSendBuf();
-    uint8_t reverseByte(uint8_t byte);
+    uint8_t *PT6315_GetSendBuf();
+
+    inline uint8_t reverseByte(uint8_t byte)
+    {
+        uint8_t reversed = 0;
+        for (int i = 0; i < 8; i++)
+        {
+            reversed <<= 1;
+            reversed |= (byte & 1);
+            byte >>= 1;
+        }
+        return reversed;
+    }
 
 public:
-    PT6315(CMD1_SCAN_MODE scanMode, uint8_t lightness, uint8_t registerMaxRow=12, uint8_t registerMaxColumn=24);
+    PT6315(uint8_t screenGridNum, uint8_t screenSegNum, uint8_t registerMaxRow = 12, uint8_t registerMaxColumn = 24);
     ~PT6315();
     void PT6315_WriteBuffer(uint8_t grid, uint8_t column, bool bit);
     void PT6315_ShowFrame();

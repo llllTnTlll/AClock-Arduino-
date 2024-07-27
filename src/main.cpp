@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <pt6315.hpp>
+#include <screen.hpp>
 
 void setup() {
   Serial.begin(115200);
@@ -10,8 +10,7 @@ void setup() {
   pinMode(10, OUTPUT);
   digitalWrite(10, HIGH);
 
-  PT6315* vfd = new PT6315(SCAN_MODE_6D22S, 7);
-  vfd->PT6315_Test(6, 16);
+  Screen* myScreen = new Screen(6, 16);
 }
 
 void loop() {

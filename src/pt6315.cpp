@@ -1,11 +1,11 @@
 #include <pt6315.hpp>
 
-PT6315::PT6315(CMD1_SCAN_MODE scanMode, uint8_t lightness, uint8_t maxRow, uint8_t maxColumn)
+PT6315::PT6315(uint8_t screenGridNum, uint8_t screenSegNum, uint8_t maxRow, uint8_t maxColumn)
     : registerMaxRow(maxRow),
       registerMaxColumn(maxColumn),
       registerBufferLen(registerMaxRow * (registerMaxColumn / 8)),
-      CURRENT_SCAN_MODE(scanMode),
-      CURRENT_LIGHTNESS(lightness)
+      CURRENT_SCAN_MODE((CMD1_SCAN_MODE)getScanModeCMD(screenGridNum)),
+      CURRENT_LIGHTNESS(7)
 {
     // 初始化Buffer
     Buffer = new bool *[registerMaxRow];
@@ -18,7 +18,7 @@ PT6315::PT6315(CMD1_SCAN_MODE scanMode, uint8_t lightness, uint8_t maxRow, uint8
     delay(200);
     PT6315_ClearAll();
     PT6315_SetScanMode(CURRENT_SCAN_MODE);
-    PT6315_SetScreen(1, 7);
+    PT6315_SetScreen(1, CURRENT_LIGHTNESS);
 }
 
 PT6315::~PT6315()
@@ -44,7 +44,7 @@ void PT6315::PT6315_SendDTA_AutoAdr(uint8_t *sendBuf)
     PT6315_SendCMD(AUTO_ADR_WRITE_DISPLAY);
 
     digitalWrite(10, LOW);
-    SPI.transfer(SET_ADR_TO_00H);
+    SPI.transfer(getSetMemToCMD(0));
 
     for (int i = 0; i < registerBufferLen; i++)
     {
@@ -93,7 +93,7 @@ uint8_t *PT6315::PT6315_GetSendBuf()
 void PT6315::PT6315_ShowFrame()
 {
     PT6315_SendCMD(AUTO_ADR_WRITE_DISPLAY);
-    PT6315_SendCMD(SET_ADR_TO_00H);
+    PT6315_SendCMD(getSetMemToCMD(0));
     uint8_t *buf = PT6315_GetSendBuf();
     PT6315_SendDTA_AutoAdr(buf);
     delete[] buf;
@@ -106,17 +106,6 @@ void PT6315::PT6315_WriteBuffer(uint8_t grid, uint8_t seg, bool bit)
     Buffer[grid - 1][seg - 1] = bit;
 }
 
-uint8_t PT6315::reverseByte(uint8_t byte)
-{
-    uint8_t reversed = 0;
-    for (int i = 0; i < 8; i++)
-    {
-        reversed <<= 1;
-        reversed |= (byte & 1);
-        byte >>= 1;
-    }
-    return reversed;
-}
 
 void PT6315::PT6315_SetScreen(bool onOff, uint8_t lightness)
 {
@@ -139,14 +128,47 @@ void PT6315::PT6315_SetScanMode(CMD1_SCAN_MODE scanMode)
 
 void PT6315::PT6315_Test(uint8_t screenGridNum, uint8_t screenSegNum)
 {
+    // 每一段逐次亮起
     for (int i = 0; i < screenSegNum; ++i)
     {
-        PT6315_ClearAll();
         for (int j = 1; j <= screenGridNum; ++j)
         {
             PT6315_WriteBuffer(j, i, 1);
         }
         PT6315_ShowFrame();
         delay(1000);
+        PT6315_ClearAll();
     }
+
+    // 全部亮起
+    for (int i = 0; i < screenSegNum; ++i)
+    {
+        for (int j = 1; j <= screenGridNum; ++j)
+        {
+            PT6315_WriteBuffer(j, i, 1);
+        }
+    }
+    PT6315_ShowFrame();
+
+    // 八段亮度调整
+    for(int i=0; i<=7; ++i){
+        PT6315_SetScreen(1, i);
+        delay(1000);
+    }
+
+    PT6315_ClearAll();
+
+}
+
+
+CMD1_SCAN_MODE PT6315::getScanModeCMD(uint8_t gridNum){
+    if(gridNum <= 12)
+        return (CMD1_SCAN_MODE)(gridNum - 4);
+    else
+        return SCAN_MODE_12D16S;
+}
+
+uint8_t PT6315::getSetMemToCMD(uint8_t memIndex){
+    if(memIndex <= 23)
+        return (0b11000000 | memIndex);
 }
