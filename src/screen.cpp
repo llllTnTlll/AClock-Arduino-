@@ -22,7 +22,7 @@ void Screen::TestScreen(){
 
 void Screen::Print(String content, std::vector<bool> symbolMask)
 {
-    ClearScreen();
+    // ClearScreen();
     // 显示所有的符号
     DisplaySymbol(symbolMask);
 

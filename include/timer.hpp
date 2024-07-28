@@ -38,7 +38,8 @@ private:
     Screen* screen;
     Time* time;
 public:
-    StopWatch(Screen*& myScreen, uint16_t timerInterval);
+    StopWatch(Screen*& myScreen);
     ~StopWatch();
-    void showTime();
+    void ShowTime();
+    void AddTime(uint8_t hours, uint8_t minutes, uint8_t seconds, uint16_t milliseconds);
 };

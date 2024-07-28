@@ -1,6 +1,6 @@
 #include "timer.hpp"
 
-StopWatch::StopWatch(Screen *&myScreen, uint16_t timerInterval)
+StopWatch::StopWatch(Screen *&myScreen)
     : screen(myScreen)
 {
     time = new Time();
@@ -11,9 +11,15 @@ StopWatch::~StopWatch()
     screen->~Screen();
 }
 
-void StopWatch::showTime()
+void StopWatch::ShowTime()
 {
-    screen->Print(time->getCurrentTime(), {1,1});
+    String currentTime = time->getCurrentTime();
+    screen->Print(currentTime, {1, 1});
+}
+
+void StopWatch::AddTime(uint8_t hours, uint8_t minutes, uint8_t seconds, uint16_t milliseconds)
+{
+    time->AddTime(hours, minutes, seconds, milliseconds);
 }
 
 Time::Time(uint8_t h, uint8_t m, uint8_t s, uint16_t ms)
@@ -130,10 +136,12 @@ String Time::getCurrentSec()
 
 String Time::getCurrentMSec()
 {
-    String ms = "";
+    String ms = String(t.ms);
+
     if (t.ms < 10)
-        ms += "00";
+        ms = "00" + ms;
     else if (t.ms < 100)
-        ms += "0";
-    return ms;
+        ms = "0" + ms;
+
+    return ms.substring(0, 2); // 这里屏幕只能显示两位所以只保留了两位
 }
