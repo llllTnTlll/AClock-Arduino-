@@ -1,7 +1,16 @@
 #include <Arduino.h>
 #include <screen.hpp>
+#include <timer.hpp>
 
 Screen* myScreen;
+StopWatch* myWatch;
+
+bool isSPIBusy() {
+    // 读取 SPSR 寄存器
+    uint8_t spsr = SPSR;
+    // 检查 SPIF 位
+    return !(spsr & (1 << SPIF));
+}
 
 void setup() {
   Serial.begin(115200);
@@ -12,9 +21,11 @@ void setup() {
   pinMode(10, OUTPUT);
   digitalWrite(10, HIGH);
 
-  myScreen = new Screen(6, 16);
+  myScreen = new SamsungScreen(6, 16);
+  myWatch = new StopWatch(myScreen, 100);
+  myWatch->showTime();
 }
 
 void loop() {
-  myScreen->ScrollPirnt("2024-07-27", 800);
+
 }
