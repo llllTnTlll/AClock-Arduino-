@@ -42,4 +42,5 @@ public:
     ~StopWatch();
     void ShowTime();
     void AddTime(uint8_t hours, uint8_t minutes, uint8_t seconds, uint16_t milliseconds);
+    void MinusTime(uint8_t hours, uint8_t minutes, uint8_t seconds, uint16_t milliseconds);
 };

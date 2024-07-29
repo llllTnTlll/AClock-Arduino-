@@ -1,26 +1,20 @@
 #include <Arduino.h>
 #include <screen.hpp>
 #include <timer.hpp>
+#include <key.hpp>
 
 Screen *myScreen;
 StopWatch *myWatch;
 
-bool isSPIBusy()
-{
-  // 读取 SPSR 寄存器
-  uint8_t spsr = SPSR;
-  // 检查 SPIF 位
-  return !(spsr & (1 << SPIF));
-}
-
 void UpdateTime()
 {
+  //TODO:这里的处理内容要根据当前模式不同改变
   myWatch->AddTime(0,0,0,10);
 }
 
 void setup()
 {
-  Serial.begin(250000);
+  // Serial.begin(250000);
 
   SPI.begin();
   SPI.beginTransaction(SPISettings(8000000, LSBFIRST, SPI_MODE3));
@@ -28,14 +22,17 @@ void setup()
   pinMode(10, OUTPUT);
   digitalWrite(10, HIGH);
 
+  // 启用按键中断
+  attachInterrupt(0, KeyBoard::BtnAPressed, FALLING);  
+
   myScreen = new SamsungScreen(6, 16);
-  myWatch = new StopWatch(myScreen); // 十微秒更新一次时间信息
+  myWatch = new StopWatch(myScreen); 
   Timer1.initialize(10000);
   Timer1.attachInterrupt(UpdateTime);
 }
 
 void loop()
 {
+  
   myWatch->ShowTime();
-  delay(10);
 }

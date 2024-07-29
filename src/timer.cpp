@@ -22,6 +22,11 @@ void StopWatch::AddTime(uint8_t hours, uint8_t minutes, uint8_t seconds, uint16_
     time->AddTime(hours, minutes, seconds, milliseconds);
 }
 
+void StopWatch::MinusTime(uint8_t hours, uint8_t minutes, uint8_t seconds, uint16_t milliseconds)
+{
+    time->MinusTime(hours, minutes, seconds, milliseconds);
+}
+
 Time::Time(uint8_t h, uint8_t m, uint8_t s, uint16_t ms)
 {
     t.hour = h;
@@ -109,35 +114,31 @@ String Time::getCurrentTime()
 
 String Time::getCurrentHour()
 {
-    String hour = "";
+    String hour = String(t.hour);
     if (t.hour < 10)
         hour += "0";
-    hour += String(t.hour);
-    return hour;
+    return hour.substring(0, 2);
 }
 
 String Time::getCurrentMin()
 {
-    String min = " ";
+    String min = String(t.min);
     if (t.min < 10)
         min += "0";
-    min += String(t.min);
-    return min;
+    return min.substring(0, 2);
 }
 
 String Time::getCurrentSec()
 {
-    String sec = "";
+    String sec = String(t.sec);
     if (t.sec < 10)
         sec += "0";
-    sec += String(t.sec);
-    return sec;
+    return sec.substring(0, 2);
 }
 
 String Time::getCurrentMSec()
 {
     String ms = String(t.ms);
-
     if (t.ms < 10)
         ms = "00" + ms;
     else if (t.ms < 100)
