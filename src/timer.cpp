@@ -111,7 +111,7 @@ void Time::MinusTime(uint8_t hours, uint8_t minutes, uint8_t seconds, uint16_t m
 
 String Time::getCurrentTime()
 {
-    String timeStr = " ";           // 这个地方可以通过添加空位，来保证显示对齐
+    String timeStr = " ";           // TODO 这个地方可以通过添加空位，来保证显示对齐
     // timeStr += getCurrentHour();
     // timeStr += ":";
     timeStr += getCurrentMin();

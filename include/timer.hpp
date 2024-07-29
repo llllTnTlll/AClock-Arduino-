@@ -37,10 +37,14 @@ class StopWatch{
 private:
     Screen* screen;
     Time* time;
+    bool isRun;
 public:
     StopWatch(Screen*& myScreen);
     ~StopWatch();
+    void SetRunStatus(bool status);
     void ShowTime();
     void AddTime(uint8_t hours, uint8_t minutes, uint8_t seconds, uint16_t milliseconds);
     void MinusTime(uint8_t hours, uint8_t minutes, uint8_t seconds, uint16_t milliseconds);
 };
+
+

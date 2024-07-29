@@ -14,10 +14,10 @@ struct Coordinate
 class Screen
 {
 protected:
-    PT6315 *driver;
-
     uint8_t screenGirdNum;
     uint8_t screenSegNum;
+    Font *font;
+    PT6315 *driver;
 
     std::vector<String> ScreenContent;
 
@@ -61,6 +61,8 @@ class SamsungScreen : public Screen
 public:
     SamsungScreen(uint8_t gridNum, uint8_t segNum) : Screen(gridNum, segNum)
     {
+        // 提供字体库
+        font = new MyFont();
         // 提供每一个数据位的起始坐标
         ScreenDigitBeginIndex = {
             {0, Coordinate{3, 9}},
@@ -77,7 +79,6 @@ public:
             Coordinate{5, 8},
         };
     }
-
 };
 
 #endif

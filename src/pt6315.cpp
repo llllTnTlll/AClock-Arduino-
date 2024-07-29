@@ -138,7 +138,7 @@ void PT6315::PT6315_SetScanMode(CMD1_SCAN_MODE scanMode)
 void PT6315::PT6315_Test(uint8_t screenGridNum, uint8_t screenSegNum)
 {
     // 每一段逐次亮起
-    for (int i = 0; i < screenSegNum; ++i)
+    for (int i = 1; i <= screenSegNum; ++i)
     {
         for (int j = 1; j <= screenGridNum; ++j)
         {
@@ -150,7 +150,7 @@ void PT6315::PT6315_Test(uint8_t screenGridNum, uint8_t screenSegNum)
     }
 
     // 全部亮起
-    for (int i = 0; i < screenSegNum; ++i)
+    for (int i = 1; i <= screenSegNum; ++i)
     {
         for (int j = 1; j <= screenGridNum; ++j)
         {

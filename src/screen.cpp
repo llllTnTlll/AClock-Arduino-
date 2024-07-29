@@ -33,7 +33,7 @@ void Screen::Print(String content, std::vector<bool> symbolMask)
         char word = static_cast<char>(content[i]);
 
         Coordinate coord = ScreenDigitBeginIndex[digitPos];
-        driver->PT6315_WriteBufferBits(coord.gridIndex, coord.segIndex, ToBoolVec(getOneCharCode(word)));
+        driver->PT6315_WriteBufferBits(coord.gridIndex, coord.segIndex, ToBoolVec(font->getOneCharCode(word)));
 
         digitPos += 1;
     }
