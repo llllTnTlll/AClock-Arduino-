@@ -1,7 +1,7 @@
 #include "timer.hpp"
 
 StopWatch::StopWatch(Screen *&myScreen)
-    : screen(myScreen)
+    : screen(myScreen), isRun(true)
 {
     time = new Time();
 }
@@ -19,12 +19,23 @@ void StopWatch::ShowTime()
 
 void StopWatch::AddTime(uint8_t hours, uint8_t minutes, uint8_t seconds, uint16_t milliseconds)
 {
-    time->AddTime(hours, minutes, seconds, milliseconds);
+    if (isRun)
+    {
+        time->AddTime(hours, minutes, seconds, milliseconds);
+    }
 }
 
 void StopWatch::MinusTime(uint8_t hours, uint8_t minutes, uint8_t seconds, uint16_t milliseconds)
 {
-    time->MinusTime(hours, minutes, seconds, milliseconds);
+    if (isRun)
+    {
+        time->MinusTime(hours, minutes, seconds, milliseconds);
+    }
+}
+
+void StopWatch::SetRunStatus(bool status)
+{
+    isRun = status;
 }
 
 Time::Time(uint8_t h, uint8_t m, uint8_t s, uint16_t ms)
@@ -100,7 +111,7 @@ void Time::MinusTime(uint8_t hours, uint8_t minutes, uint8_t seconds, uint16_t m
 
 String Time::getCurrentTime()
 {
-    String timeStr = "";
+    String timeStr = " ";           // 这个地方可以通过添加空位，来保证显示对齐
     // timeStr += getCurrentHour();
     // timeStr += ":";
     timeStr += getCurrentMin();
@@ -116,7 +127,7 @@ String Time::getCurrentHour()
 {
     String hour = String(t.hour);
     if (t.hour < 10)
-        hour += "0";
+        hour = "0" + hour;
     return hour.substring(0, 2);
 }
 
@@ -124,7 +135,7 @@ String Time::getCurrentMin()
 {
     String min = String(t.min);
     if (t.min < 10)
-        min += "0";
+        min = "0" + min;
     return min.substring(0, 2);
 }
 
@@ -132,7 +143,7 @@ String Time::getCurrentSec()
 {
     String sec = String(t.sec);
     if (t.sec < 10)
-        sec += "0";
+        sec = "0" + sec;
     return sec.substring(0, 2);
 }
 

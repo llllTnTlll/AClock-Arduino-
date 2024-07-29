@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include <screen.hpp>
 #include <timer.hpp>
-#include <key.hpp>
 
 Screen *myScreen;
 StopWatch *myWatch;
@@ -22,17 +21,14 @@ void setup()
   pinMode(10, OUTPUT);
   digitalWrite(10, HIGH);
 
-  // 启用按键中断
-  attachInterrupt(0, KeyBoard::BtnAPressed, FALLING);  
-
   myScreen = new SamsungScreen(6, 16);
   myWatch = new StopWatch(myScreen); 
+  
   Timer1.initialize(10000);
   Timer1.attachInterrupt(UpdateTime);
 }
 
 void loop()
 {
-  
   myWatch->ShowTime();
 }
