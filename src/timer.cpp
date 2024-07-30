@@ -14,7 +14,7 @@ StopWatch::~StopWatch()
 void StopWatch::ShowTime()
 {
     String currentTime = time->getCurrentTime();
-    screen->Print(currentTime, {1, 1});
+    screen->PrintString(currentTime, {1, 1});
 }
 
 void StopWatch::AddTime(uint8_t hours, uint8_t minutes, uint8_t seconds, uint16_t milliseconds)

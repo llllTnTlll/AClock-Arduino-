@@ -3,17 +3,14 @@
 
 #include <ArxContainer.h>
 
-// // 全局变量
-// extern const String errString;
-// extern const std::map<char, String> FontDic;
-
-// String getOneCharCode(char word);
-
 class Font
 {
 protected:
     String errString;
     std::map<char, String> FontDic;
+
+    virtual void InitFontDic() = 0;
+    virtual void InitErrString() = 0;
 
 public:
     inline String getOneCharCode(char word)
@@ -28,15 +25,20 @@ public:
             return errString;
         }
     }
+    void Initialize()
+    {
+        InitFontDic();
+        InitErrString();
+    }
 };
 
+// 参照以下格式创建自己的字体
 class MyFont : public Font
 {
-public:
-    MyFont()
+protected:
+    // 在这里定义你的字体
+    void InitFontDic() override
     {
-        errString = "0000000";
-
         FontDic['0'] = "1110111";
         FontDic['1'] = "0100100";
         FontDic['2'] = "1101011";
@@ -49,6 +51,14 @@ public:
         FontDic['9'] = "1111101";
 
         FontDic[' '] = "0000000";
+        FontDic['.'] = "0001000";
+    }
+
+    // 在这里定义字体缺失时的显示内容
+    void InitErrString() override
+    {
+        errString = "0000000";
     }
 };
+
 #endif

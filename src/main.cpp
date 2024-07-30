@@ -5,14 +5,14 @@
 Screen *myScreen;
 StopWatch *myWatch;
 
-void UpdateTime()
-{
-  myWatch->AddTime(0,0,0,10);
-}
+// void UpdateTime()
+// {
+//   myWatch->AddTime(0,0,0,10);
+// }
 
 void setup()
 {
-  // Serial.begin(250000);
+  Serial.begin(250000);
 
   SPI.begin();
   SPI.beginTransaction(SPISettings(8000000, LSBFIRST, SPI_MODE3));
@@ -21,13 +21,15 @@ void setup()
   digitalWrite(10, HIGH);
   
   myScreen = new SamsungScreen(6, 16);
-  myWatch = new StopWatch(myScreen); 
+  // myWatch = new StopWatch(myScreen); 
   
-  Timer1.initialize(10000);
-  Timer1.attachInterrupt(UpdateTime);
+  // Timer1.initialize(10000);
+  // Timer1.attachInterrupt(UpdateTime);
+
+  myScreen->PrintNum(3.141292, 5, 3);
 }
 
 void loop()
 {
-  myWatch->ShowTime();
+  // myWatch->ShowTime();
 }
