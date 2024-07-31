@@ -89,6 +89,8 @@ public:
 
     void PT63XX_ShowFrame();
     void PT63XX_ClearAll();
+    void PT63XX_ClearBuffer();
+    void PT63XX_ClearRegister();
 
     void PT63XX_SetScreen(bool onOff, uint8_t lightness);
     void PT63XX_SetScanMode(CMD1_SCAN_MODE scanMode);

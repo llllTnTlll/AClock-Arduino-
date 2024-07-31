@@ -64,7 +64,8 @@ void PT63XX::PT63XX_ClearAll()
     PT63XX::PT63XX_ClearRegister();
 }
 
-void PT63XX::PT63XX_ClearBuffer(){
+void PT63XX::PT63XX_ClearBuffer()
+{
     for (int i = 1; i <= registerMaxRow; ++i)
     {
         for (int j = 1; j <= registerMaxColumn; ++j)
@@ -74,7 +75,8 @@ void PT63XX::PT63XX_ClearBuffer(){
     }
 }
 
-void PT63XX::PT63XX_ClearRegister(){
+void PT63XX::PT63XX_ClearRegister()
+{
     uint8_t *buf = PT63XX_GetSendBuf();
     PT63XX_SendDTA_AutoAdr(buf);
     delete[] buf;
@@ -118,7 +120,7 @@ void PT63XX::PT63XX_WriteBufferOneBit(uint8_t grid, uint8_t seg, bool bit)
 
 void PT63XX::PT63XX_WriteBufferBits(uint8_t grid, uint8_t seg, std::vector<bool> bits)
 {
-    for (int i = 0; i < bits.size(); i++)
+    for (size_t i = 0; i < bits.size(); i++)
     {
         Buffer[grid - 1][seg - 1 + i] = static_cast<bool>(bits[i]);
     }
@@ -181,10 +183,18 @@ CMD1_SCAN_MODE PT63XX::getScanModeCMD(uint8_t gridNum)
 {
     if (gridNum <= screenMaxGrid)
         return (CMD1_SCAN_MODE)(gridNum - 4);
+    else
+    {
+        Serial.println("Scan mode set err");
+    }
 }
 
 uint8_t PT63XX::getSetMemToCMD(uint8_t memIndex)
 {
-    if (memIndex <= (3*screenMaxGrid-1))
+    if (memIndex <= (3 * screenMaxGrid - 1))
         return (0b11000000 | memIndex);
+    else
+    {
+        Serial.println("Can not set addr to " + memIndex);
+    }
 }

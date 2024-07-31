@@ -1,6 +1,6 @@
 #include <screen.hpp>
 
-Screen::Screen(uint8_t gridNum, uint8_t segNum, uint8_t registerMaxRow = 12, uint8_t registerMaxColumn = 24)
+Screen::Screen(uint8_t gridNum, uint8_t segNum, uint8_t registerMaxRow, uint8_t registerMaxColumn)
     : screenGirdNum(gridNum), screenSegNum(segNum)
 {
     driver = new PT63XX(screenGirdNum, screenSegNum, registerMaxRow, registerMaxColumn);
@@ -48,7 +48,7 @@ void Screen::WriteNum(double num, uint8_t width, uint8_t prec, std::vector<bool>
 {
     char buffer[width + 1];
     dtostrf(num, width, prec, buffer);
-    for (int i = 0; i < strlen(buffer); i++) {
+    for (size_t i = 0; i < strlen(buffer); i++) {
         if (buffer[i] == ' ') {
             buffer[i] = '0';
         }
@@ -61,7 +61,7 @@ void Screen::WriteNum(double num, uint8_t width, uint8_t prec, std::vector<bool>
 void Screen::WriteNum(int num, uint8_t width, uint8_t prec, std::vector<bool> symbolMask){
     char buffer[width + 1];
     dtostrf(num, width, prec, buffer);
-    for (int i = 0; i < strlen(buffer); i++) {
+    for (size_t i = 0; i < strlen(buffer); i++) {
         if (buffer[i] == ' ') {
             buffer[i] = '0';
         }
