@@ -1,5 +1,5 @@
-#ifndef PT6315_HPP
-#define PT6315_HPP
+#ifndef PT63XX_HPP
+#define PT63XX_HPP
 
 #include <SPI.h>
 #include <ArxContainer.h>
@@ -47,7 +47,7 @@ typedef enum
     FIXED_ADR_WRITE_DISPLAY = 0b01000100,
 } CMD2_DTA_SET;
 
-class PT6315
+class PT63XX
 {
 private:
     bool **Buffer;
@@ -64,9 +64,9 @@ private:
     CMD1_SCAN_MODE getScanModeCMD(uint8_t gridNum);
     uint8_t getSetMemToCMD(uint8_t memIndex);
 
-    void PT6315_SendCMD(uint8_t cmd);
-    void PT6315_SendDTA_AutoAdr(uint8_t *sendBuf);
-    uint8_t *PT6315_GetSendBuf();
+    void PT63XX_SendCMD(uint8_t cmd);
+    void PT63XX_SendDTA_AutoAdr(uint8_t *sendBuf);
+    uint8_t *PT63XX_GetSendBuf();
 
     inline uint8_t reverseByte(uint8_t byte)
     {
@@ -81,18 +81,18 @@ private:
     }
 
 public:
-    PT6315(uint8_t screenGridNum, uint8_t screenSegNum, uint8_t registerMaxRow = 12, uint8_t registerMaxColumn = 24);
-    ~PT6315();
+    PT63XX(uint8_t screenGridNum, uint8_t screenSegNum, uint8_t registerMaxRow = 12, uint8_t registerMaxColumn = 24);
+    ~PT63XX();
 
-    void PT6315_WriteBufferOneBit(uint8_t grid, uint8_t seg, bool bit);
-    void PT6315_WriteBufferBits(uint8_t grid, uint8_t seg, std::vector<bool>bits);
+    void PT63XX_WriteBufferOneBit(uint8_t grid, uint8_t seg, bool bit);
+    void PT63XX_WriteBufferBits(uint8_t grid, uint8_t seg, std::vector<bool>bits);
 
-    void PT6315_ShowFrame();
-    void PT6315_ClearAll();
+    void PT63XX_ShowFrame();
+    void PT63XX_ClearAll();
 
-    void PT6315_SetScreen(bool onOff, uint8_t lightness);
-    void PT6315_SetScanMode(CMD1_SCAN_MODE scanMode);
-    void PT6315_Test(uint8_t screenGridNum, uint8_t screenSegNum);
+    void PT63XX_SetScreen(bool onOff, uint8_t lightness);
+    void PT63XX_SetScanMode(CMD1_SCAN_MODE scanMode);
+    void PT63XX_Test(uint8_t screenGridNum, uint8_t screenSegNum);
 };
 
 #endif

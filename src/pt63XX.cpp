@@ -1,6 +1,6 @@
-#include <pt6315.hpp>
+#include <pt63XX.hpp>
 
-PT6315::PT6315(uint8_t screenGridNum, uint8_t screenSegNum, uint8_t maxRow, uint8_t maxColumn)
+PT63XX::PT63XX(uint8_t screenGridNum, uint8_t screenSegNum, uint8_t maxRow, uint8_t maxColumn)
     : registerMaxRow(maxRow),
       registerMaxColumn(maxColumn),
       registerBufferLen(registerMaxRow * (registerMaxColumn / 8)),
@@ -18,12 +18,12 @@ PT6315::PT6315(uint8_t screenGridNum, uint8_t screenSegNum, uint8_t maxRow, uint
 
     // 以地址自增模式初始化芯片
     delay(200);
-    PT6315_ClearAll();
-    PT6315_SetScanMode(CURRENT_SCAN_MODE);
-    PT6315_SetScreen(1, CURRENT_LIGHTNESS);
+    PT63XX_ClearAll();
+    PT63XX_SetScanMode(CURRENT_SCAN_MODE);
+    PT63XX_SetScreen(1, CURRENT_LIGHTNESS);
 }
 
-PT6315::~PT6315()
+PT63XX::~PT63XX()
 {
     // 析构时销毁Buffer
     for (int i = 0; i < registerMaxRow; ++i)
@@ -33,7 +33,7 @@ PT6315::~PT6315()
     delete[] Buffer;
 }
 
-void PT6315::PT6315_SendCMD(uint8_t cmd)
+void PT63XX::PT63XX_SendCMD(uint8_t cmd)
 {
     digitalWrite(10, LOW);
     SPI.transfer(cmd);
@@ -41,9 +41,9 @@ void PT6315::PT6315_SendCMD(uint8_t cmd)
     delay(1);
 }
 
-void PT6315::PT6315_SendDTA_AutoAdr(uint8_t *sendBuf)
+void PT63XX::PT63XX_SendDTA_AutoAdr(uint8_t *sendBuf)
 {
-    PT6315_SendCMD(AUTO_ADR_WRITE_DISPLAY);
+    PT63XX_SendCMD(AUTO_ADR_WRITE_DISPLAY);
 
     digitalWrite(10, LOW);
     SPI.transfer(getSetMemToCMD(0));
@@ -57,23 +57,31 @@ void PT6315::PT6315_SendDTA_AutoAdr(uint8_t *sendBuf)
     delay(10);
 }
 
-void PT6315::PT6315_ClearAll()
+void PT63XX::PT63XX_ClearAll()
 {
+    PT63XX_ClearBuffer();
+
+    PT63XX::PT63XX_ClearRegister();
+}
+
+void PT63XX::PT63XX_ClearBuffer(){
     for (int i = 1; i <= registerMaxRow; ++i)
     {
         for (int j = 1; j <= registerMaxColumn; ++j)
         {
-            PT6315_WriteBufferOneBit(i, j, 0);
+            PT63XX_WriteBufferOneBit(i, j, 0);
         }
     }
+}
 
-    uint8_t *buf = PT6315_GetSendBuf();
-    PT6315_SendDTA_AutoAdr(buf);
+void PT63XX::PT63XX_ClearRegister(){
+    uint8_t *buf = PT63XX_GetSendBuf();
+    PT63XX_SendDTA_AutoAdr(buf);
     delete[] buf;
 }
 
 // 危险，注意内存溢出
-uint8_t *PT6315::PT6315_GetSendBuf()
+uint8_t *PT63XX::PT63XX_GetSendBuf()
 {
     uint8_t *flattenBuf = new uint8_t[registerBufferLen];
     int k = 0;
@@ -92,23 +100,23 @@ uint8_t *PT6315::PT6315_GetSendBuf()
     return flattenBuf;
 }
 
-void PT6315::PT6315_ShowFrame()
+void PT63XX::PT63XX_ShowFrame()
 {
-    PT6315_SendCMD(AUTO_ADR_WRITE_DISPLAY);
-    PT6315_SendCMD(getSetMemToCMD(0));
-    uint8_t *buf = PT6315_GetSendBuf();
-    PT6315_SendDTA_AutoAdr(buf);
+    PT63XX_SendCMD(AUTO_ADR_WRITE_DISPLAY);
+    PT63XX_SendCMD(getSetMemToCMD(0));
+    uint8_t *buf = PT63XX_GetSendBuf();
+    PT63XX_SendDTA_AutoAdr(buf);
     delete[] buf;
-    PT6315_SetScanMode(CURRENT_SCAN_MODE);
-    PT6315_SetScreen(1, CURRENT_LIGHTNESS);
+    PT63XX_SetScanMode(CURRENT_SCAN_MODE);
+    PT63XX_SetScreen(1, CURRENT_LIGHTNESS);
 }
 
-void PT6315::PT6315_WriteBufferOneBit(uint8_t grid, uint8_t seg, bool bit)
+void PT63XX::PT63XX_WriteBufferOneBit(uint8_t grid, uint8_t seg, bool bit)
 {
     Buffer[grid - 1][seg - 1] = bit;
 }
 
-void PT6315::PT6315_WriteBufferBits(uint8_t grid, uint8_t seg, std::vector<bool> bits)
+void PT63XX::PT63XX_WriteBufferBits(uint8_t grid, uint8_t seg, std::vector<bool> bits)
 {
     for (int i = 0; i < bits.size(); i++)
     {
@@ -116,7 +124,7 @@ void PT6315::PT6315_WriteBufferBits(uint8_t grid, uint8_t seg, std::vector<bool>
     }
 }
 
-void PT6315::PT6315_SetScreen(bool onOff, uint8_t lightness)
+void PT63XX::PT63XX_SetScreen(bool onOff, uint8_t lightness)
 {
     if (lightness <= 7)
     {
@@ -126,27 +134,27 @@ void PT6315::PT6315_SetScreen(bool onOff, uint8_t lightness)
             cmd4_temp |= 0b00001000;
         }
         cmd4_temp |= lightness;
-        PT6315_SendCMD(cmd4_temp);
+        PT63XX_SendCMD(cmd4_temp);
     }
 }
 
-void PT6315::PT6315_SetScanMode(CMD1_SCAN_MODE scanMode)
+void PT63XX::PT63XX_SetScanMode(CMD1_SCAN_MODE scanMode)
 {
-    PT6315_SendCMD(scanMode);
+    PT63XX_SendCMD(scanMode);
 }
 
-void PT6315::PT6315_Test(uint8_t screenGridNum, uint8_t screenSegNum)
+void PT63XX::PT63XX_Test(uint8_t screenGridNum, uint8_t screenSegNum)
 {
     // 每一段逐次亮起
     for (int i = 1; i <= screenSegNum; ++i)
     {
         for (int j = 1; j <= screenGridNum; ++j)
         {
-            PT6315_WriteBufferOneBit(j, i, 1);
+            PT63XX_WriteBufferOneBit(j, i, 1);
         }
-        PT6315_ShowFrame();
+        PT63XX_ShowFrame();
         delay(1000);
-        PT6315_ClearAll();
+        PT63XX_ClearAll();
     }
 
     // 全部亮起
@@ -154,29 +162,29 @@ void PT6315::PT6315_Test(uint8_t screenGridNum, uint8_t screenSegNum)
     {
         for (int j = 1; j <= screenGridNum; ++j)
         {
-            PT6315_WriteBufferOneBit(j, i, 1);
+            PT63XX_WriteBufferOneBit(j, i, 1);
         }
     }
-    PT6315_ShowFrame();
+    PT63XX_ShowFrame();
 
     // 八段亮度调整
     for (int i = 0; i <= 7; ++i)
     {
-        PT6315_SetScreen(1, i);
+        PT63XX_SetScreen(1, i);
         delay(1000);
     }
 
-    PT6315_ClearAll();
+    PT63XX_ClearAll();
 }
 
-CMD1_SCAN_MODE PT6315::getScanModeCMD(uint8_t gridNum)
+CMD1_SCAN_MODE PT63XX::getScanModeCMD(uint8_t gridNum)
 {
-    if (gridNum <= 12)
+    if (gridNum <= screenMaxGrid)
         return (CMD1_SCAN_MODE)(gridNum - 4);
 }
 
-uint8_t PT6315::getSetMemToCMD(uint8_t memIndex)
+uint8_t PT63XX::getSetMemToCMD(uint8_t memIndex)
 {
-    if (memIndex <= 23)
+    if (memIndex <= (3*screenMaxGrid-1))
         return (0b11000000 | memIndex);
 }

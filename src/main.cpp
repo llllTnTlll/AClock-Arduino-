@@ -4,6 +4,7 @@
 
 Screen *myScreen;
 StopWatch *myWatch;
+bool flag = true;
 
 // void UpdateTime()
 // {
@@ -26,10 +27,15 @@ void setup()
   // Timer1.initialize(10000);
   // Timer1.attachInterrupt(UpdateTime);
 
-  myScreen->PrintNum(3.141292, 5, 3);
+  myScreen->WriteNum(3.141292, 5, 3);
+  myScreen->Print();
 }
 
 void loop()
 {
   // myWatch->ShowTime();
+  myScreen->WriteBit(2, 8, flag);
+  myScreen->Print();
+  flag = !flag;
+  delay(1000);
 }

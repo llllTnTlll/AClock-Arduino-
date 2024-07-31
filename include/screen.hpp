@@ -2,7 +2,7 @@
 #define SCREEN_HPP
 
 #include <Arduino.h>
-#include "pt6315.hpp"
+#include "PT63XX.hpp"
 #include "font.hpp"
 
 struct Coordinate
@@ -17,7 +17,7 @@ protected:
     uint8_t screenGirdNum;
     uint8_t screenSegNum;
     Font *font;
-    PT6315 *driver;
+    PT63XX *driver;
 
     std::vector<String> ScreenContent;
 
@@ -44,7 +44,7 @@ protected:
     };
 
 public:
-    Screen(uint8_t gridNum, uint8_t segNum);
+    Screen(uint8_t gridNum, uint8_t segNum, uint8_t registerMaxRow = 12, uint8_t registerMaxColumn = 24);
     ~Screen();
 
     // 使用之前必须要调用一下这个函数
@@ -54,9 +54,11 @@ public:
     void ClearScreen();
     void TestScreen();
 
-    void PrintString(String content, std::vector<bool> symbolMask = {});
-    void PrintNum(double num, uint8_t width, uint8_t prec, std::vector<bool> symbolMask = {});
-    void PrintNum(int num, uint8_t width, uint8_t prec, std::vector<bool> symbolMask = {});
+    void WriteString(String content, std::vector<bool> symbolMask = {});
+    void WriteNum(double num, uint8_t width, uint8_t prec, std::vector<bool> symbolMask = {});
+    void WriteNum(int num, uint8_t width, uint8_t prec, std::vector<bool> symbolMask = {});
+    void WriteBit(uint8_t grid, uint8_t seg, bool bit);
+    void Print();
     void ScrollPirnt(String content, uint16_t interval);
     void DisplaySymbol(std::vector<bool> mask);
 };
